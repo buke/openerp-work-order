@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Top menu item -->
+        <menuitem name="Work Order" id="menu_work_order_root" sequence="35" groups="base.group_user"/>
+
+        <!-- Top menu catalog -->
+        <menuitem id="menu_work_order_catalog" parent="menu_work_order_root" name="Work Orders" sequence="0"/>
+
+        <record id="view_order_tree" model="ir.ui.view">
+            <field name="name">work.order.tree</field>
+            <field name="model">work.order</field>
+            <field name="arch" type="xml">
+                <tree string="Work Orders" fonts="bold:message_unread==True">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="name" string="Order Number"/>
+                    <field name="shop_id"/>
+                    <field name="sale_order_id"/>
+                    <field name="origin"/>
+                    <field name="client_order_ref"/>
+                    <field name="date_order"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_order_form" model="ir.ui.view">
+            <field name="name">work.order.form</field>
+            <field name="model">work.order</field>
+            <field name="arch" type="xml">
+                <form string="Work Order" version="7.0">
+                    <header>
+
+                        <button name="sig_confirm" states="draft" string="确认" type="workflow"/>
+                        <button name="sig_reject" states="waiting_accepted" string="拒绝" type="workflow"/>
+                        <button name="sig_block" states="waiting_accepted" string="阻塞" type="workflow"/>
+                        <button name="sig_cancel" states="draft,waiting_accepted,rejected,blocked" string="取消" type="workflow" class="oe_highlight" />
+
+                        <button name="sig_accept" states="waiting_accepted" string="接受" type="workflow" />
+                        <button name="sig_business_start" states="accepted" string="司机确认开始" type="workflow" />
+                        <button name="sig_customer_start" states="accepted" string="用户确认开始" type="workflow" />
+                        <button name="sig_business_end" states="started" string="司机确认结束" type="workflow" />
+                        <button name="sig_customer_end" states="started" string="用户确认结束" type="workflow" />
+
+                        <field name="state" widget="statusbar" statusbar_visible="draft,waiting_accepted,accepted,started,ended,done"/>
+                </header>
+                <sheet>
+                    <h1>
+                        <label string="Work Order "/>
+                        <field name="name" class="oe_inline" readonly="1"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="sale_order_id"/>
+                            <field name="shop_id"/>
+                            <field name="date_order"/>
+                        </group>
+                        <group>
+                            <field name="origin"/>
+                            <field name="client_order_ref"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Work Log">
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="work_order_action" model="ir.actions.act_window">
+            <field name="name">Work Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">work.order</field>
+            <field name="context">{}</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem action="work_order_action" id="menu_work_order" parent="menu_work_order_catalog" sequence="0" name="Work Order"/>
+
+        
+    </data>
+</openerp>
+

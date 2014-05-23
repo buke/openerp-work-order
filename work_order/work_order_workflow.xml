@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="work_order" model="workflow">
+            <field name="name">Work Order Basic Workflow</field>
+            <field name="osv">work.order</field>
+            <field name="on_create">True</field>
+        </record>       
+
+        <record id="act_draft" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+        </record>
+        <record id="act_waiting_accept" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">waiting accept</field>
+            <field name="kind">function</field>
+            <field name="action">act_waiting_accept()</field>
+        </record>
+        <record id="act_reject" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">reject</field>
+            <field name="kind">function</field>
+            <field name="action">act_reject()</field>
+        </record>
+        <record id="act_block" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">block</field>
+            <field name="kind">function</field>
+            <field name="action">act_block()</field>
+        </record>
+        <record id="act_cancel" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">cancel</field>
+            <field name="flow_stop">True</field>
+            <field name="kind">function</field>
+            <field name="action">act_cancel()</field>
+        </record>
+        <record id="act_accept" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">accept</field>
+            <field name="split_mode">OR</field>
+            <field name="kind">function</field>
+            <field name="action">act_accept()</field>
+        </record>
+        <record id="act_manual" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">manual</field>
+            <field name="kind">function</field>
+            <field name="action">act_manual()</field>
+        </record>
+
+        <record id="act_wait_business_start" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">Waiting Business Start</field>
+            <field name="kind">function</field>
+            <field name="action">act_wait_business_start()</field>
+        </record>
+        <record id="act_wait_customer_start" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">Waiting Customer Start</field>
+            <field name="kind">function</field>
+            <field name="action">act_wait_customer_start()</field>
+        </record>
+
+        <record id="act_start" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">Start</field>
+            <field name="kind">function</field>
+            <field name="split_mode">OR</field>
+            <field name="join_mode">AND</field>
+            <field name="action">act_start()</field>
+        </record>
+
+        <record id="act_wait_business_end" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">Waiting Business End</field>
+        </record>
+        <record id="act_wait_customer_end" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">Waiting Customer End</field>
+        </record>
+
+        <record id="act_end" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">End</field>
+            <field name="kind">function</field>
+            <field name="join_mode">AND</field>
+            <field name="action">act_end()</field>
+        </record>
+
+        <record id="act_sale_order" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">sale order</field>
+            <field name="kind">subflow</field>
+            <field name="subflow_id" search="[('osv','=','sale.order')]"/>
+            <field name="action">act_sale_order()</field>
+        </record>
+        <record id="act_sale_order_except" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">sale_order_except</field>
+            <field name="kind">function</field>
+            <field name="action">act_sale_order_except()</field>
+        </record>
+        <record id="act_sale_order_done" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">sale_order_done</field>
+            <field name="action">act_sale_order_done()</field>
+            <field name="kind">function</field>
+        </record>
+        <record id="act_done" model="workflow.activity">
+            <field name="wkf_id" ref="work_order"/>
+            <field name="name">Done</field>
+            <field name="kind">function</field>
+            <field name="flow_stop">True</field>
+            <field name="action">act_done()</field>
+        </record>
+
+
+        <record id="trans_draft_waiting_accept" model="workflow.transition">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_waiting_accept"/>
+            <field name="signal">sig_confirm</field>
+        </record>
+        <record id="trans_waiting_reject" model="workflow.transition">
+            <field name="act_from" ref="act_waiting_accept"/>
+            <field name="act_to" ref="act_reject"/>
+            <field name="signal">sig_reject</field>
+        </record>
+        <record id="trans_waiting_block" model="workflow.transition">
+            <field name="act_from" ref="act_waiting_accept"/>
+            <field name="act_to" ref="act_block"/>
+            <field name="signal">sig_block</field>
+        </record>
+        <record id="trans_draft_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="signal">sig_cancel</field>
+        </record>
+        <record id="trans_waiting_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_waiting_accept"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="signal">sig_cancel</field>
+        </record>
+        <record id="trans_block_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_block"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="signal">sig_cancel</field>
+        </record>
+        <record id="trans_reject_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_reject"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="signal">sig_cancel</field>
+        </record>
+        <record id="trans_waiting_accept" model="workflow.transition">
+            <field name="act_from" ref="act_waiting_accept"/>
+            <field name="act_to" ref="act_accept"/>
+            <field name="signal">sig_accept</field>
+        </record>
+        <record id="trans_accept_business_start" model="workflow.transition">
+            <field name="act_from" ref="act_accept"/>
+            <field name="act_to" ref="act_wait_business_start"/>
+        </record>
+        <record id="trans_accept_customer_start" model="workflow.transition">
+            <field name="act_from" ref="act_accept"/>
+            <field name="act_to" ref="act_wait_customer_start"/>
+        </record>
+        <record id="trans_business_start" model="workflow.transition">
+            <field name="act_from" ref="act_wait_business_start"/>
+            <field name="act_to" ref="act_start"/>
+            <field name="signal">sig_business_start</field>
+        </record>
+        <record id="trans_customer_start" model="workflow.transition">
+            <field name="act_from" ref="act_wait_customer_start"/>
+            <field name="act_to" ref="act_start"/>
+            <field name="signal">sig_customer_start</field>
+        </record>
+
+        <record id="trans_block_manual" model="workflow.transition">
+            <field name="act_from" ref="act_block"/>
+            <field name="act_to" ref="act_manual"/>
+            <field name="signal">sig_manual</field>
+        </record>
+
+        <record id="trans_reject_manual" model="workflow.transition">
+            <field name="act_from" ref="act_reject"/>
+            <field name="act_to" ref="act_manual"/>
+            <field name="signal">sig_manual</field>
+        </record>
+
+        <record id="trans_manual_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_manual"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="signal">sig_cancel</field>
+        </record>
+
+        <record id="trans_manual_accept" model="workflow.transition">
+            <field name="act_from" ref="act_manual"/>
+            <field name="act_to" ref="act_accept"/>
+            <field name="signal">sig_accept</field>
+        </record>
+
+
+        <record id="trans_start_business_end" model="workflow.transition">
+            <field name="act_from" ref="act_start"/>
+            <field name="act_to" ref="act_wait_business_end"/>
+        </record>
+        <record id="trans_start_customer_end" model="workflow.transition">
+            <field name="act_from" ref="act_start"/>
+            <field name="act_to" ref="act_wait_customer_end"/>
+        </record>
+
+        <record id="trans_business_end" model="workflow.transition">
+            <field name="act_from" ref="act_wait_business_end"/>
+            <field name="act_to" ref="act_end"/>
+            <field name="signal">sig_business_end</field>
+        </record>
+        <record id="trans_customer_end" model="workflow.transition">
+            <field name="act_from" ref="act_wait_customer_end"/>
+            <field name="act_to" ref="act_end"/>
+            <field name="signal">sig_customer_end</field>
+        </record>
+
+        <record id="trans_end_sale_order" model="workflow.transition">
+            <field name="act_from" ref="act_end"/>
+            <field name="act_to" ref="act_sale_order"/>
+            <field name="condition">check_invoice()</field>
+        </record>
+        <record id="trans_sale_order_except" model="workflow.transition">
+            <field name="act_from" ref="act_sale_order"/>
+            <field name="act_to" ref="act_sale_order_except"/>
+            <field name="signal">subflow.cancel</field>
+        </record>
+        <record id="trans_sale_order_except_done" model="workflow.transition">
+            <field name="act_from" ref="act_sale_order_except"/>
+            <field name="act_to" ref="act_sale_order_done"/>
+            <field name="signal">sig_sale_order_ok</field>
+        </record>
+        <record id="trans_sale_order_done" model="workflow.transition">
+            <field name="act_from" ref="act_sale_order"/>
+            <field name="act_to" ref="act_sale_order_done"/>
+            <field name="signal">subflow.done</field>
+        </record>
+        <record id="trans_sale_order_done_done" model="workflow.transition">
+            <field name="act_from" ref="act_sale_order_done"/>
+            <field name="act_to" ref="act_done"/>
+        </record>
+
+
+
+    </data>
+</openerp>
+
